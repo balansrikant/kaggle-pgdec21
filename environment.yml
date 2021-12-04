@@ -1,11 +1,12 @@
-name: kaggle-pgnov21
+name: kaggle-pgdec21
 channels:
   - defaults
 dependencies:
-  - matplotlib
-  - python=3.9.7
-  - numpy
+  - python=3.9
   - pandas
-  - scikit-learn
+  - matplotlib
+  - pytest
   - lightgbm
+  - scikit-learn
   - conda-forge::optuna
+prefix: C:\ProgramData\Anaconda3\envs\kaggle-pgdec21
