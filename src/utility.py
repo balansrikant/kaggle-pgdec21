@@ -578,69 +578,18 @@ def get_binning_scores_val(
     return improved_cols
 
 
-# def make_final_pred_stack(
-#     models_in,
-#     stack_model_in,
-#     X_in,
-#     y_in,
-#     original_features,
-#     X_test_in,
-#     ids):
-#     """generate predictions on test df using stacking"""
+def split_dataset(df_train_in, df_test_in, target):
+    original_features = df_test_in.columns
+    X = df_train_in[original_features]
+    y = df_train_in[target]
+    X_train, X_val, y_train, y_val = train_test_split(
+        X, 
+        y, 
+        test_size=0.2, 
+        train_size=0.8, 
+        stratify=y)
 
-#     X_in = X_in[original_features]
-#     X_test_in = X_test_in[original_features]
-
-#     # get km enhanced df
-#     important_features = list(featureScores.sort_values(by='Abs_score'
-# , ascending=False).head(15)['Specs'])
-#     X_train_km, X_val_km, X_test_km = get_kmeans_dist_ratios(
-#         X_in,
-#         X_val_in,
-#         X_test_in,
-#         important_features,
-#         10)
-
-#     # get meta df
-#     df_meta_train = get_stack_df(models_in, X_in, X_train_km, y_in)
-
-
-#     meta_test_in = []
-#     for model in models_in:
-#         # Fit model
-
-#         # Create hold out predictions for a classifier
-#         if model.__class__.__name__ == 'LinearSVC':
-#             clf = CalibratedClassifierCV(base_estimator=model, cv=10)
-#         else:
-#             clf = model
-
-#         clf.fit(X_in, y_in)
-#         meta_test_model = clf.predict_proba(X_test_in)
-
-#         # Remove extra col - 0th col = 1st col in a two class dataset
-#         meta_test_model = np.delete(meta_test_model, 0, axis=1).ravel()
-
-#         # Gather meta training data
-#         meta_test_in.append(meta_test_model)
-
-#         meta_test_in = np.array(meta_test_in).T
-#         X_meta_test_in = pd.DataFrame(meta_test_in)
-
-#     # Optional (Add original features to meta)
-#     X_meta_test_in = pd.DataFrame(np.concatenate(
-# (X_meta_test_in, X_test_in), axis=1))
-
-#     stack_model_in.fit(pd.DataFrame(X_meta_train), y_in)
-
-#     # Final output
-#     preds = stack_model_in.predict_proba(X_meta_test)[:,1]
-#     output = pd.DataFrame({'id': ids, 'target': preds})
-#     output.to_csv('submission.csv', index=False)
-
-#     preds = clf.predict_proba(df_test_in)[:,1]
-#     df_preds = pd.DataFrame({'id': ids_in, 'target': preds})
-#     return df_preds
+    return X_train, X_val, y_train, y_val, original_features
 
 
 def make_final_pred_single(model_in, X_in, y_in, X_test_in, ids):
